@@ -11,6 +11,10 @@
 #include <cmath>
 #pragma once 
 
+
+typedef enum Alientyp{ Row1,Row2,Row3,Row3,Row4,Row5,Row6,Ende};
+
+
 class Schuss{
   public:
   Schuss(Vector2 ort);
@@ -57,7 +61,28 @@ class Raumschiff{
 
 };
 
+class Alien{
+  public:
+  Alien(Alientyp,Vector2);
+  ~Alien();
+  void Draw();
+  void Movel();
+  void Mover();
+  void Moved();
 
+  private : 
+  Vector2 position;
+  int steps;
+  Alientyp sein;
+  Texture2D bild;
+
+
+
+
+
+
+
+};
 
 
 

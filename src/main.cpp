@@ -38,6 +38,16 @@ int main(){
 
   std::vector<Schuss*> schuesse{};
 
+  //Alien init 
+  std::vector<std::vector<Alien>> Alienblock = {};
+  for(int i = Row1 ; i!= End ; i++){
+
+  }
+
+
+
+
+
 
   SetTargetFPS(60);
   while(!WindowShouldClose()){
@@ -63,6 +73,7 @@ int main(){
       //Schiff bewegung 
       if(IsKeyDown(KEY_A)) Spaceship->Movel();   
       if(IsKeyDown(KEY_D)) Spaceship->Mover(Screenbreite-48);   
+
 
 
 
