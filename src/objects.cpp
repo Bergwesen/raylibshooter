@@ -6,7 +6,8 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <cmath>
-#include  "objects.hpp"\
+#include <iterator>
+#include  "objects.hpp"
 
 
 
@@ -34,7 +35,9 @@ void Raumschiff::tester(){
 
 Schuss* Raumschiff::shoot(){
     // es hier so enden,dass die position die mitte des schiffs ist somit kommt der strahl uach von der mitte des schiffs
-    Schuss *bang= new Schuss(position);
+    Vector2 temp = position;
+    temp.x = position.x + bild.width/2;
+    Schuss *bang= new Schuss(temp);
     return bang;
 
 };
@@ -90,49 +93,49 @@ int Schuss::isdead(){
 
 
 
-Alien::Alien(Alientyp typ,Vector2 pos){
+Alien::Alien(int b,Vector2 pos){
   position.x = pos.x;
   position.y = pos.y;
-  sein = typ;
-  switch (sein)
+  switch (b)
   {
-  case Row1:
+  case 1:
   {
-    bild = LoadTexture("a1.png");
+    bild = LoadTexture("resources/a1.png");
   }
     break;
-    case Row2 :
+    case 2 :
     {
 
-    bild = LoadTexture("a2.png");
+    bild = LoadTexture("resources/a2.png");
     }
     break;
 
-    case  Row3:
+    case  3:
     {
 
-    bild = LoadTexture("a3.png");
+
+    bild = LoadTexture("resources/a3.png");
     }
     break;
   
-    case  Row4:
+    case  4:
     {
 
-    bild = LoadTexture("a4.png");
+    bild = LoadTexture("resources/a4.png");
     }
     break;
 
-    case  Row5:
+    case  5:
     {
 
-    bild = LoadTexture("a5.png");
+    bild = LoadTexture("resources/a5.png");
     }
     break;
 
-    case  Row6:
+    case  6:
     {
 
-    bild = LoadTexture("a6.png");
+    bild = LoadTexture("resources/a6.png");
     }
     break;
   }
@@ -163,4 +166,61 @@ void Alien::Mover(){
       if(position.x > (GetScreenWidth()- bild.width) ) {
           position.x = GetScreenWidth()-bild.width;
        }
+}
+
+void Alien::Moved(){
+  position.y = position.y + steps;
+  if(position.y > (GetScreenHeight()-bild.height)){
+    position.y = GetScreenHeight() -bild.height;
+  }
+}
+
+
+int Alien::getwidth(){
+  return bild.width;
+}
+
+int Alien::getheight(){
+  return bild.height;
+}
+
+
+int Alien::geth(){
+  return position.y;
+}
+
+int Alien::getx(){
+  return position.x;
+}
+
+void Blockalien::update(){
+    l = -1;
+    r = -1;
+    height = -1;
+      std::vector<std::vector<Alien*>> block1 = *block;
+      for(auto i = block1.rbegin() ; i!= block1.rend() ; i++){
+        std::vector<Alien*>& ref = *i;
+        std::cout<< "jfffffo " << std::endl;
+         for(int x = 0; x < ref.size(); x++){
+          // geplant ist es tote alien zu null zu setzen
+          if( ref[x] != NULL){
+              std::cout<< "jo " << std::endl;
+              Alien &g = *ref[x];
+              if(l == -1){
+                // iterieren von links nach rechts deshalb ist der erste alien die linke grenze
+                l = g.getx();
+              }
+              r = std::max(r,g.getx());
+              // irgendwas ist falsch
+              height = g.geth();
+          }
+          if(r != -1 && l != -1 && height != -1){
+            break;
+          }
+         }
+          if(r != -1 && l != -1 && height != -1){
+            break;
+          }
+
+      }
 }

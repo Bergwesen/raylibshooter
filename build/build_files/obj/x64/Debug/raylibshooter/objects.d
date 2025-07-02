@@ -174,7 +174,12 @@ obj/x64/Debug/raylibshooter/objects.o: ../../src/objects.cpp \
  /usr/include/c++/12/tr1/modified_bessel_func.tcc \
  /usr/include/c++/12/tr1/poly_hermite.tcc \
  /usr/include/c++/12/tr1/poly_laguerre.tcc \
- /usr/include/c++/12/tr1/riemann_zeta.tcc ../../include/objects.hpp
+ /usr/include/c++/12/tr1/riemann_zeta.tcc /usr/include/c++/12/iterator \
+ /usr/include/c++/12/bits/stream_iterator.h ../../include/objects.hpp \
+ /usr/include/c++/12/vector /usr/include/c++/12/bits/stl_uninitialized.h \
+ /usr/include/c++/12/bits/stl_vector.h \
+ /usr/include/c++/12/bits/stl_bvector.h \
+ /usr/include/c++/12/bits/vector.tcc
 /usr/include/stdc-predef.h:
 ../../include/resource_dir.h:
 ../external/raylib-master/src/raylib.h:
@@ -387,4 +392,11 @@ obj/x64/Debug/raylibshooter/objects.o: ../../src/objects.cpp \
 /usr/include/c++/12/tr1/poly_hermite.tcc:
 /usr/include/c++/12/tr1/poly_laguerre.tcc:
 /usr/include/c++/12/tr1/riemann_zeta.tcc:
+/usr/include/c++/12/iterator:
+/usr/include/c++/12/bits/stream_iterator.h:
 ../../include/objects.hpp:
+/usr/include/c++/12/vector:
+/usr/include/c++/12/bits/stl_uninitialized.h:
+/usr/include/c++/12/bits/stl_vector.h:
+/usr/include/c++/12/bits/stl_bvector.h:
+/usr/include/c++/12/bits/vector.tcc:

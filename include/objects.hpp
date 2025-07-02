@@ -9,10 +9,11 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <cmath>
+#include <vector>
 #pragma once 
 
 
-typedef enum Alientyp{ Row1,Row2,Row3,Row3,Row4,Row5,Row6,Ende};
+typedef enum Alientyp{ Row1,Row2,Row3,Row4,Row5,Row6,Ende};
 
 
 class Schuss{
@@ -63,16 +64,20 @@ class Raumschiff{
 
 class Alien{
   public:
-  Alien(Alientyp,Vector2);
+  Alien(int,Vector2);
   ~Alien();
   void Draw();
   void Movel();
   void Mover();
   void Moved();
+  int getwidth();
+  int getheight();
+  int getx();
+  int geth();
 
   private : 
   Vector2 position;
-  int steps;
+  int steps = 10;
   Alientyp sein;
   Texture2D bild;
 
@@ -84,6 +89,15 @@ class Alien{
 
 };
 
+
+
+typedef struct Blockalien{
+  std::vector<std::vector<Alien*>> *block;
+  int l;
+  int r;
+  int height;
+  void update();
+  };
 
 
 
