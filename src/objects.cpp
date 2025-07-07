@@ -90,6 +90,16 @@ int Schuss::isdead(){
 }
 
 
+int Schuss::schusskolision(Blockalien b){
+    std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
+    if(position.x >= *b.r && position.x <= *b.l && position.y <= *b.height){
+      return 1;
+    }
+      return 0;
+    
+};
+
+
 
 
 
@@ -192,35 +202,72 @@ int Alien::geth(){
 int Alien::getx(){
   return position.x;
 }
-
-void Blockalien::update(){
-    l = -1;
-    r = -1;
-    height = -1;
-      std::vector<std::vector<Alien*>> block1 = *block;
-      for(auto i = block1.rbegin() ; i!= block1.rend() ; i++){
+// soll angeben ob ein alien tot ist und seine position in der list auf null gesetzt werden muss
+int Alien::hit(){
+  leben = leben -1;
+  if(leben == 0){
+    return 0;
+  } else if(leben < 0){
+    //fehler szenario
+    return 1111110;
+  } else {
+    return 1;
+  }
+}
+  //das hier ist nicht dumme schreibweise der methode die aufgrund einer falschen debugguginng session enstant
+void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
+    l = k;
+    r = b;
+    height = a;
+    *l = -1;
+    *r = -1;
+    *height = -1;
+      for(auto i = h.rbegin() ; i!= h.rend() ; i++){
         std::vector<Alien*>& ref = *i;
-        std::cout<< "jfffffo " << std::endl;
          for(int x = 0; x < ref.size(); x++){
           // geplant ist es tote alien zu null zu setzen
           if( ref[x] != NULL){
               std::cout<< "jo " << std::endl;
               Alien &g = *ref[x];
-              if(l == -1){
+              if(*l == -1){
                 // iterieren von links nach rechts deshalb ist der erste alien die linke grenze
-                l = g.getx();
+                *l = g.getx();
               }
-              r = std::max(r,g.getx());
+              *r = std::max(*r,g.getx());
               // irgendwas ist falsch
-              height = g.geth();
+              *height = g.geth();
           }
-          if(r != -1 && l != -1 && height != -1){
-            break;
+          if(*r != -1 && *l != -1 && *height != -1){
+            return;
           }
          }
-          if(r != -1 && l != -1 && height != -1){
-            break;
+          if( *r != -1 && *l != -1 && *height != -1){
+            return;
           }
 
       }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//FUNKTIONENEN
+

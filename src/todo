@@ -1,3 +1,17 @@
-todo 
-- Bei der Kollisionsueberpruefung muss du einen radius von der Geschwindigkeit des balls beachten (die x Geschwindigkeit) oder die breite des bricks 
   
+
+
+    Drawing to the screen.
+    Handling user input.
+    Game loop.
+    Creating and managing a dynamic number of objects (e.g., factory pattern).
+    State machines for enemy AI.
+    Playing sound.
+    Using shaders.
+    Networking for online features.
+
+https://gameprogrammingpatterns.com/introduction.html
+
+alien leben 
+schusscode
+schuss zu einer queue gestalten

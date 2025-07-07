@@ -19,7 +19,7 @@ const int Screenhoehe = 800;
 const int alienblockx = 100;
 const int alienblocky = 300;
 const int aliencount = 7;
-const int alienrows = 7;
+const int alienrows = 6;
 
 
 
@@ -38,16 +38,16 @@ int main(){
   Raumschiff *Spaceship  = new Raumschiff(250,500,3);
   Texture2D Schiff = LoadTexture("resources/schiff.png");
   Spaceship->tester();
+  //kann eigentlich eine queue sein
   std::vector<Schuss*> schuesse{};
 
   //Alien init 
 
   std::vector<std::vector<Alien*>> Alienblock;
   Blockalien mainblock;
-  mainblock.block = &Alienblock;
-  mainblock.height = 0;
-  mainblock.l = 0;
-  mainblock.r = 0; 
+  mainblock.height = new int;
+  mainblock.l = new int;
+  mainblock.r = new int; 
   Vector2 incr;
   int aliencd = 0;
   int alienmoveswitch = 1;
@@ -119,9 +119,21 @@ int main(){
       schuesse.erase(it,schuesse.end());
       }
 
-      for(auto ib : schuesse)  {
+      for( auto& ib : schuesse)  {
         ib->Move();
       }
+
+      for( auto& ib : schuesse)  {
+        if(ib->schusskolision(mainblock) == 1){
+          std::cout<< " HIT " << std::endl;
+        } else{
+          break;
+        }
+
+      }
+
+
+
 
 
       //Alien bewegung
@@ -135,7 +147,10 @@ int main(){
         {
           for (int x = 0; x < aliencount; x++)
           {
+            //testet dass wir nicht auf null alien zugreifen ,dies sind alien die getoetet wurden
+            if(Alienblock[i][x] !=  NULL){
             Alienblock[i][x]->Movel();
+            }
           }
           
         }
@@ -145,7 +160,9 @@ int main(){
           {
             for (int x = 0; x < aliencount; x++)
             {
+              if(Alienblock[i][x] != NULL){
               Alienblock[i][x]->Mover();
+              }
             }
             }
           alienmoveswitch = alienmoveswitch +1;
@@ -155,15 +172,19 @@ int main(){
           {
             for (int x = 0; x < aliencount; x++)
             {
+              if(Alienblock[i][x] != NULL){
+              std::cout<< i <<" und " << x<<std::endl; 
               Alienblock[i][x]->Moved();
+              }
+              
             }
           }
 
           alienmoveswitch =  (alienmovereset == 1)  ? -5 : 1;
           alienmovereset = alienmovereset * -1;
         }
-        mainblock.update();
-        std::cout << mainblock.l <<  " "<<mainblock.r << " " <<mainblock.height << std::endl;
+        mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
+        std::cout << *mainblock.l <<  " "<< *mainblock.r << " " << *mainblock.height << std::endl;
       }
 
 
@@ -216,8 +237,10 @@ int main(){
       {
         for (int x = 0; x < aliencount; x++)
         {
+          if(Alienblock[i][x] != NULL){
           std::vector<Alien*> b = Alienblock[i];
           b[x]->Draw();
+          }
         }
         }
         }

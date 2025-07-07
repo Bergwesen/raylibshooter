@@ -16,6 +16,57 @@
 typedef enum Alientyp{ Row1,Row2,Row3,Row4,Row5,Row6,Ende};
 
 
+
+
+
+                    
+
+
+
+
+class Alien{
+  public:
+  Alien(int,Vector2);
+  ~Alien();
+  void Draw();
+  void Movel();
+  void Mover();
+  void Moved();
+  int hit();
+  int getwidth();
+  int getheight();
+  int getx();
+  int geth();
+
+  private : 
+  Vector2 position;
+  int steps = 10;
+  Alientyp sein;
+  Texture2D bild;
+  int leben = 3;
+
+
+
+
+
+
+
+};
+
+
+
+typedef struct Blockalien{
+  int *l;
+  int *r;
+  int *height;
+  void update(int *k ,int *b,int *a,std::vector<std::vector<Alien*>> h);
+  };
+
+
+
+                    
+
+
 class Schuss{
   public:
   Schuss(Vector2 ort);
@@ -23,6 +74,7 @@ class Schuss{
   void Draw();
   void Move();
   int  isdead();
+  int schusskolision(Blockalien b);
 
 
   private :
@@ -30,14 +82,7 @@ class Schuss{
   Vector2 groesse;
   int dead;
 
-
 };
-
-
-
-
-                    
-
 
 
 class Raumschiff{
@@ -62,43 +107,15 @@ class Raumschiff{
 
 };
 
-class Alien{
-  public:
-  Alien(int,Vector2);
-  ~Alien();
-  void Draw();
-  void Movel();
-  void Mover();
-  void Moved();
-  int getwidth();
-  int getheight();
-  int getx();
-  int geth();
-
-  private : 
-  Vector2 position;
-  int steps = 10;
-  Alientyp sein;
-  Texture2D bild;
-
-
-
-
-
-
-
-};
-
-
-
-typedef struct Blockalien{
-  std::vector<std::vector<Alien*>> *block;
-  int l;
-  int r;
-  int height;
-  void update();
-  };
+//das hier ist nicht dumme schreibweise der methode die aufgrund einer falschen debugguginng session enstant
+/*typedef struct Blockalien{
+  int *l;
+  int *r;
+  int *height;
+  void update(int *k ,int *b,int *a,std::vector<std::vector<Alien*>> h);
+  }; */
 
 
 
                     
+//FUNKTIONEN
