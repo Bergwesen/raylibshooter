@@ -19,7 +19,7 @@ typedef enum Alientyp{ Row1,Row2,Row3,Row4,Row5,Row6,Ende};
 
 
 
-                    
+class Schuss; 
 
 
 
@@ -37,6 +37,8 @@ class Alien{
   int getheight();
   int getx();
   int geth();
+  int tot();
+  Schuss* shoot();
 
   private : 
   Vector2 position;
@@ -73,8 +75,12 @@ class Schuss{
   ~Schuss();
   void Draw();
   void Move();
+  void dMove();
+  float getx();
+  float gety();
   int  isdead();
   int schusskolision(Blockalien b);
+  Vector2 schusslocater(std::vector<std::vector<Alien*>> &Alienblock );
 
 
   private :
@@ -103,6 +109,21 @@ class Raumschiff{
   private :
   Texture2D bild;
 
+
+
+};
+
+
+class Block{
+  public:
+  void Draw();
+  Block(int x, int y);
+  int tot();
+
+  private :
+  int leben = 3;
+  Vector2 position;
+  Texture2D bild;
 
 
 };

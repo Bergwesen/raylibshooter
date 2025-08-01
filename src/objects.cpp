@@ -33,6 +33,7 @@ void Raumschiff::tester(){
   printf(" jo \n");
 };
 
+
 Schuss* Raumschiff::shoot(){
     // es hier so enden,dass die position die mitte des schiffs ist somit kommt der strahl uach von der mitte des schiffs
     Vector2 temp = position;
@@ -81,6 +82,14 @@ void Schuss::Move(){
 
 }
 
+void Schuss::dMove(){
+  position.y = position.y + schussgeschwindigkeit;
+  if(position.y >  800){
+    dead = 1;
+  }
+
+}
+
 int Schuss::isdead(){
   if(dead == 1){
   printf("is   b tot\n");
@@ -91,13 +100,71 @@ int Schuss::isdead(){
 
 
 int Schuss::schusskolision(Blockalien b){
+    //std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
+    if(position.x >= *b.l && position.x <= *b.r && position.y <= *b.height){
     std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
-    if(position.x >= *b.r && position.x <= *b.l && position.y <= *b.height){
       return 1;
     }
       return 0;
     
 };
+
+float Schuss::getx(){
+  return position.x;
+}
+
+float Schuss::gety(){
+  return position.y;
+}
+
+Vector2 Schuss::schusslocater(std::vector<std::vector<Alien*>> &Alienblock){
+  int zeile = -1;
+  
+  for(auto x : Alienblock[0] ){
+    zeile = zeile +1;
+
+    //std::cout <<  position.x << " ist in  " << x->getx() <<"-"<< x->getwidth()+x->getx()<< std::endl;
+    if( x != NULL){
+    std::cout <<  position.x << " ist in  " << x->getx() <<"-"<< x->getwidth()+x->getx()<< std::endl;
+    if( position.x >= x->getx() && (x->getx()+x->getwidth()) >= position.x){
+        std::cout << "     test " << position.x << " und kkkk " << x->getx() << std::endl;
+        
+        break;
+    }
+    }
+  }
+  int spalte = -1;
+  for(auto x : Alienblock){
+        spalte = spalte +1;
+       // if(x[zeile] != NULL){
+        if(!x[zeile]->tot()){
+        std::cout << " test " << position.y << " und " << x[zeile]->geth()<<  " und " << x[zeile]->getheight()<< std::endl;
+        if( (position.y+groesse.y ) >= x[zeile]->geth() && (position.y+groesse.y) <= x[zeile]->geth() + x[zeile]->getheight()  ){
+         std::cout<< "HHHIT "<< zeile << ","<<  spalte ;
+         dead = 1;
+          int restleben = x[zeile]->hit();
+          std::cout<<" leben " << restleben <<std::endl;
+         if(restleben== 0){
+            x[zeile] = NULL;
+            std::cout<<"drinnnnnnnen"<<std::endl;
+         }
+         break;
+        }
+        }
+  }
+
+  Vector2 a;
+  if( spalte == -1 || zeile == -1){
+    a.x = -1;
+    a.y = -1;
+    dead = 1;
+  }
+  else{
+  a.x = zeile;
+  a.y = spalte;
+  }
+  return a;
+}
 
 
 
@@ -163,6 +230,15 @@ void Alien::Draw(){
     DrawTextureV(bild,position,WHITE);
 };
 
+Schuss* Alien::shoot(){
+    // es hier so enden,dass die position die mitte des schiffs ist somit kommt der strahl uach von der mitte des schiffs
+    Vector2 temp = position;
+    temp.x = position.x + bild.width/2;
+    Schuss *bang= new Schuss(temp);
+    return bang;
+
+};
+
 void Alien::Movel(){
 
       position.x = position.x -  steps;   
@@ -199,6 +275,13 @@ int Alien::geth(){
   return position.y;
 }
 
+int Alien::tot(){
+  if(leben <= 0){
+    return 1;
+  }
+  return 0;
+}
+
 int Alien::getx(){
   return position.x;
 }
@@ -209,25 +292,25 @@ int Alien::hit(){
     return 0;
   } else if(leben < 0){
     //fehler szenario
-    return 1111110;
+    return 0;
   } else {
-    return 1;
+    return leben;
   }
 }
   //das hier ist nicht dumme schreibweise der methode die aufgrund einer falschen debugguginng session enstant
-void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
+/*void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
     l = k;
     r = b;
     height = a;
     *l = -1;
     *r = -1;
     *height = -1;
-      for(auto i = h.rbegin() ; i!= h.rend() ; i++){
+      for(auto i = h.begin() ; i!= h.end() ; i++){
         std::vector<Alien*>& ref = *i;
          for(int x = 0; x < ref.size(); x++){
           // geplant ist es tote alien zu null zu setzen
           if( ref[x] != NULL){
-              std::cout<< "jo " << std::endl;
+ //             std::cout<< "jo " << std::endl;
               Alien &g = *ref[x];
               if(*l == -1){
                 // iterieren von links nach rechts deshalb ist der erste alien die linke grenze
@@ -236,9 +319,7 @@ void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h)
               *r = std::max(*r,g.getx());
               // irgendwas ist falsch
               *height = g.geth();
-          }
-          if(*r != -1 && *l != -1 && *height != -1){
-            return;
+//              std::cout << g.geth() << " hoehe " << std::endl;
           }
          }
           if( *r != -1 && *l != -1 && *height != -1){
@@ -246,28 +327,45 @@ void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h)
           }
 
       }
+} */
+
+void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
+  l = k;
+  r = b;
+  height = a;
+  *l =  6000;
+  *r = -1;
+  *height = -1;
+  for(int y = 0; y < h.size(); y++){
+
+    for(int z = 0 ; z< h[y].size() ; z++){
+      if(h[y][z] != NULL){
+      *l = std::min(*l,h[y][z]->getx());
+      *r = std::max(*r,h[y][z]->getx()+h[y][z]->getwidth());
+      *height = std::max(*height,h[y][z]->geth());
+      }
+    }
+  }
+}
+
+Block::Block(int x , int y){
+    position.x = x;
+    position.y = y;
+    bild = LoadTexture("resources/b1.png");
 }
 
 
 
 
+int Block::tot(){
+  if( leben<= 0){
+    return 1;
+  }else {
+    return 0;
+  }
 
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//FUNKTIONENEN
-
+void Block::Draw(){
+    DrawTextureV(bild,position,WHITE);
+};

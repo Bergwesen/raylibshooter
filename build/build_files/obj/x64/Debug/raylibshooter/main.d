@@ -178,8 +178,12 @@ obj/x64/Debug/raylibshooter/main.o: ../../src/main.cpp \
  /usr/include/c++/12/bits/stl_uninitialized.h \
  /usr/include/c++/12/bits/stl_vector.h \
  /usr/include/c++/12/bits/stl_bvector.h \
- /usr/include/c++/12/bits/vector.tcc /usr/include/c++/12/algorithm \
- /usr/include/c++/12/bits/stl_algo.h \
+ /usr/include/c++/12/bits/vector.tcc /usr/include/c++/12/list \
+ /usr/include/c++/12/bits/stl_list.h \
+ /usr/include/c++/12/bits/allocated_ptr.h \
+ /usr/include/c++/12/ext/aligned_buffer.h \
+ /usr/include/c++/12/bits/list.tcc /usr/include/c++/12/stdlib.h \
+ /usr/include/c++/12/algorithm /usr/include/c++/12/bits/stl_algo.h \
  /usr/include/c++/12/bits/algorithmfwd.h \
  /usr/include/c++/12/bits/stl_heap.h \
  /usr/include/c++/12/bits/stl_tempbuf.h \
@@ -403,6 +407,12 @@ obj/x64/Debug/raylibshooter/main.o: ../../src/main.cpp \
 /usr/include/c++/12/bits/stl_vector.h:
 /usr/include/c++/12/bits/stl_bvector.h:
 /usr/include/c++/12/bits/vector.tcc:
+/usr/include/c++/12/list:
+/usr/include/c++/12/bits/stl_list.h:
+/usr/include/c++/12/bits/allocated_ptr.h:
+/usr/include/c++/12/ext/aligned_buffer.h:
+/usr/include/c++/12/bits/list.tcc:
+/usr/include/c++/12/stdlib.h:
 /usr/include/c++/12/algorithm:
 /usr/include/c++/12/bits/stl_algo.h:
 /usr/include/c++/12/bits/algorithmfwd.h:
