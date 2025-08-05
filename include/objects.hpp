@@ -79,13 +79,15 @@ class Schuss{
   float getx();
   float gety();
   int  isdead();
+  void kill();
   int schusskolision(Blockalien b);
   Vector2 schusslocater(std::vector<std::vector<Alien*>> &Alienblock );
+  Vector2 groesse;
 
 
   private :
   Vector2 position;
-  Vector2 groesse;
+  //Vector2 groesse;
   int dead;
 
 };
@@ -102,12 +104,15 @@ class Raumschiff{
   void Movel();
   void Mover(int border);
   Schuss* shoot();
-
+  void hit();
+  int getheight();
+  int getwidth();
 
 
 
   private :
   Texture2D bild;
+  int leben = 3;
 
 
 
@@ -119,6 +124,9 @@ class Block{
   void Draw();
   Block(int x, int y);
   int tot();
+  void hit();
+  int getheight();
+  int getwidth();
 
   private :
   int leben = 3;

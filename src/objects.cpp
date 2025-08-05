@@ -13,7 +13,7 @@
 
 const int schussbreite = 4;
 const int schusslaenge = 10;
-const int schussgeschwindigkeit = 2; 
+const int schussgeschwindigkeit = 3; 
 
 Raumschiff::Raumschiff(int x,int y,int speed){
       position.x = x;
@@ -32,6 +32,20 @@ void Raumschiff::Draw(){
 void Raumschiff::tester(){
   printf(" jo \n");
 };
+
+void Raumschiff::hit(){
+  if(leben >= 1){
+    leben = leben -1;
+    }
+}
+
+int Raumschiff::getwidth(){
+  return bild.width;
+}
+
+int Raumschiff::getheight(){
+  return bild.height;
+}
 
 
 Schuss* Raumschiff::shoot(){
@@ -98,7 +112,11 @@ int Schuss::isdead(){
   return 0;
 }
 
+void Schuss::kill(){
+  dead = 1;
+}
 
+//Anpassen sodass man nur checkt ob es groesser ist als die y hohe es muss nicht zwischen sein siehe block auch fuer schusslcaoter
 int Schuss::schusskolision(Blockalien b){
     //std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
     if(position.x >= *b.l && position.x <= *b.r && position.y <= *b.height){
@@ -145,7 +163,7 @@ Vector2 Schuss::schusslocater(std::vector<std::vector<Alien*>> &Alienblock){
           int restleben = x[zeile]->hit();
           std::cout<<" leben " << restleben <<std::endl;
          if(restleben== 0){
-            x[zeile] = NULL;
+            //x[zeile] = NULL;
             std::cout<<"drinnnnnnnen"<<std::endl;
          }
          break;
@@ -368,4 +386,46 @@ int Block::tot(){
 
 void Block::Draw(){
     DrawTextureV(bild,position,WHITE);
+    //TODO 
+    /*
+    switch(leben){
+      case 0 :
+      {
+        bild = LoadTexture();
+      }
+      break;
+      case 1 :
+      {
+
+        bild = LoadTexture();
+      }
+      break;
+      case 2 :
+      {
+        bild = LoadTexture();
+      }
+      break;
+      case 3 :
+      {
+        bild = LoadTexture();
+      }
+      break;
+      default :
+
+
+    } */
 };
+void Block::hit(){
+    leben = leben -1;
+    if(leben <= 0){
+      leben = 0;
+    }
+}
+
+int Block::getheight(){
+  return bild.height;
+}
+
+int Block::getwidth(){
+  return bild.width;
+}

@@ -25,6 +25,17 @@ const int aliencount = 7;
 const int alienrows = 6;
 
 
+const int blocky = 600;
+const int einsblockx = Screenbreite * 1/4;
+const int duoblockx = Screenbreite * 2/4;
+const int trioblockx = Screenbreite * 3/4;
+
+const int schiffx = 250;
+const int schiffy = 700;
+const int schiffspeed = 4;
+const int schusscoldown = 30;
+const int Blockcount = 3;
+
 
 
 
@@ -34,11 +45,15 @@ int main(){
 
   InitWindow(Screenbreite,Screenhoehe,"Spaceshooter"); 
 
+  int score = 0;
+  int leben = 3;
+
 
   Screens Gamescreen = LOGO;
   int framecounter = 0;
   srand(time(NULL));
-  Raumschiff *Spaceship  = new Raumschiff(250,600,3);
+  Raumschiff *Spaceship  = new Raumschiff(schiffx,schiffy,4);
+  int schusscd = 0;
   Texture2D Schiff = LoadTexture("resources/schiff.png");
   Spaceship->tester();
   //kann eigentlich eine queue sein
@@ -70,18 +85,23 @@ int main(){
     incr.x = alienblockx;
     incr.y= incr.y - Alienblock[i][0]->getheight();
   }
+  int rowcount = 0;
 
   int alienimgheight = Alienblock[0][0]->getheight();
   int allienimgwidth = Alienblock[0][0]->getwidth();
 
 
   //Bloecke 
-  Block uno = Block(Screenbreite * 1/4,500);
-  Block duo = Block(Screenbreite * 2/4,500);
-  Block trio = Block(Screenbreite *3/4,500);
+  Block uno = Block(einsblockx,blocky);
+  Block duo = Block(duoblockx,blocky);
+  Block trio = Block(trioblockx,blocky);
+  //Besser und moduluarer fuer die Bloecke initialisierung
+  std::vector<Block *> Bloecke(Blockcount);
 
 
 
+  //DeathScreen input
+  bool retry = false;
 
   SetTargetFPS(60);
   while(!WindowShouldClose()){
@@ -107,6 +127,7 @@ int main(){
         //counters und frames
         aliencd = aliencd + 1;
         alienschusscd = alienschusscd +1;
+        schusscd = schusscd +1;
         //std::cout<< aliencd << std::endl;
 
 
@@ -122,8 +143,9 @@ int main(){
 
 
       //Schiffaktionen
-      if(IsKeyPressed(KEY_R)){
+      if(IsKeyPressed(KEY_R) && schusscd >= schusscoldown){
             schuesse.push_back(Spaceship->shoot());
+            schusscd = 0;
       } 
 
       //Schussaktion + loeschen 
@@ -146,7 +168,11 @@ int main(){
           std::cout<< " real hit " << asf << " und " << asdf << std::endl;
           Vector2 k = ib->schusslocater(Alienblock); 
           std::cout<< Alienblock.size()<< " "<< Alienblock[0].size() <<" HIT "<< k.x <<" , " << k.y << std::endl;
-//          Alienblock[k.y][k.x]->l;
+          if(k.x != -1 && k.y != -1){
+            if(Alienblock[k.y][k.x]->tot()){
+                score = score +10;
+            }
+            }
           std::cout<<" it " << std::endl;
         } else{
           break;
@@ -160,7 +186,7 @@ int main(){
 
       //Alien bewegung
 
-      if (aliencd >= 300)
+      if (aliencd >= 140)
       {
         aliencd = 0;
         std::cout<< "moveswitch " << alienmoveswitch << std::endl;
@@ -232,6 +258,9 @@ int main(){
       int randomzahl = rand() % lowalien.size();
       //for( auto m : lowalien){
           dschuesse.push_back(lowalien[randomzahl]->shoot());
+
+      alienschusscd = 0;
+      }
      // }
    if(dschuesse.size() != 0){
       auto it = remove_if(dschuesse.begin(),dschuesse.end(), [](Schuss *x){
@@ -239,10 +268,55 @@ int main(){
       }) ;
       dschuesse.erase(it,dschuesse.end());
       }
-      alienschusscd = 0;
-      }
       for( auto& ib : dschuesse)  {
         ib->dMove();
+      }
+
+
+      // Block hit check 
+      if(uno.tot() && duo.tot() && trio.tot()){ 
+        Gamescreen = ENDING;
+      }
+      for(auto i : dschuesse){
+        if( i->getx() >= einsblockx &&  i->getx()<= einsblockx+uno.getwidth()){
+          std::cout<< i->gety() << " von das test "<< blocky-uno.getheight() << std::endl;
+          if((i->gety() +  i->groesse.y) >= (blocky) ){
+          i->kill();   
+          uno.hit();
+         }
+        }else if(i->getx() >= duoblockx && i->getx() <= duoblockx+duo.getwidth()){
+          if((i->gety() +i->groesse.y ) >=  (blocky )  ){
+          i->kill();   
+          duo.hit();
+         }
+        } else if(i->getx() >= trioblockx && i->getx() <= trioblockx+trio.getwidth()){
+          if((i->gety() + i->groesse.y) >= (blocky ) ){
+          i->kill();   
+          trio.hit();
+         }
+        }else{
+          if((i->gety() - i->groesse.y)  <  blocky - uno.getheight() ){
+            //da es ein geordneter vektor ist sollte der vordere vekor am laengste laufen und somit weiter unten sein
+            break;
+          }
+        }
+      }
+
+      for(auto i : dschuesse){
+        if(i->gety() >= Spaceship->position.y){
+        if(i->getx() >= Spaceship->position.x && i->getx() <= (Spaceship->position.x + Spaceship->getwidth())){
+          i->kill();
+          Spaceship->hit();
+          leben = leben -1;
+          WaitTime(0.5);
+          Spaceship->position.x = Spaceship->position.x +60;
+          if(leben <= 0){
+           Gamescreen = ENDING; 
+          }
+        }
+        }else {
+          break;
+        }
       }
                        
 
@@ -251,7 +325,12 @@ int main(){
     break;
     case  ENDING:
     {
-
+      
+      if(IsKeyPressed(KEY_W)){
+        retry = true;
+      }else if(IsKeyPressed(KEY_S)){
+        retry = false;
+      }
     }
     break;
     }
@@ -282,8 +361,11 @@ int main(){
     break;
     case  GAME:
     {
+
       DrawRectangle(0,0,Screenbreite,Screenhoehe,BLACK);
       DrawText("Space Shooters",40,Screenhoehe*0.5,50,WHITE);
+      DrawText(TextFormat("Score : %d ",score),50, 10,20,WHITE);
+      DrawText(TextFormat("Leben : %d ",leben),50, 750,20,WHITE);
       Spaceship->Draw();
       //Schuss
       for(auto i : schuesse){
@@ -298,7 +380,6 @@ int main(){
       {
         for (int x = 0; x < aliencount; x++)
         {
-
 //          if(Alienblock[i][x] != NULL){
           if(!Alienblock[i][x]->tot()){
           std::vector<Alien*> b = Alienblock[i];
@@ -314,7 +395,15 @@ int main(){
     break;
     case  ENDING:
     {
-
+      DrawRectangle(0, 0, Screenbreite, Screenhoehe, BLACK);
+      DrawText("Game Over", 40, Screenhoehe * 0.5, 50, RED);
+      if(retry){
+      DrawText("End", 40, Screenhoehe * 0.5 + 40, 50, WHITE);
+      DrawText("Retry", 40, Screenhoehe * 0.5 + 80, 50, RED);
+      }else {
+      DrawText("End", 40, Screenhoehe * 0.5 + 40, 50, RED);
+      DrawText("Retry", 40, Screenhoehe * 0.5 + 80, 50, WHITE);
+      }
     }
     break;
     }
