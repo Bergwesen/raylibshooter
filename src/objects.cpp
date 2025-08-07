@@ -272,8 +272,12 @@ void Alien::Mover(){
        }
 }
 
-void Alien::Moved(){
+void Alien::Moved(int border){
   position.y = position.y + steps;
+  if(position.y > border){
+    position.y = position.y - steps;
+    return;
+  }
   if(position.y > (GetScreenHeight()-bild.height)){
     position.y = GetScreenHeight() -bild.height;
   }
@@ -372,7 +376,13 @@ Block::Block(int x , int y){
     bild = LoadTexture("resources/b1.png");
 }
 
+int Block::getx(){
+  return position.x; 
+}
 
+int Block::gety(){
+  return position.y; 
+}
 
 
 int Block::tot(){

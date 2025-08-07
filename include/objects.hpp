@@ -31,7 +31,7 @@ class Alien{
   void Draw();
   void Movel();
   void Mover();
-  void Moved();
+  void Moved(int border);
   int hit();
   int getwidth();
   int getheight();
@@ -42,10 +42,10 @@ class Alien{
 
   private : 
   Vector2 position;
-  int steps = 10;
+  int steps = 15;
   Alientyp sein;
   Texture2D bild;
-  int leben = 3;
+  int leben = 1;
 
 
 
@@ -125,6 +125,8 @@ class Block{
   Block(int x, int y);
   int tot();
   void hit();
+  int gety();
+  int getx();
   int getheight();
   int getwidth();
 

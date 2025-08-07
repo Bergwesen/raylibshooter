@@ -46,7 +46,16 @@ int main(){
   InitWindow(Screenbreite,Screenhoehe,"Spaceshooter"); 
 
   int score = 0;
+  //schiffs leben
+  //bloecke init
+
+  Block uno = Block(einsblockx,blocky);
+  Block duo = Block(duoblockx,blocky);
+  Block trio = Block(trioblockx,blocky);
+reset: 
   int leben = 3;
+
+  int rowmove = 0;
 
 
   Screens Gamescreen = LOGO;
@@ -91,10 +100,6 @@ int main(){
   int allienimgwidth = Alienblock[0][0]->getwidth();
 
 
-  //Bloecke 
-  Block uno = Block(einsblockx,blocky);
-  Block duo = Block(duoblockx,blocky);
-  Block trio = Block(trioblockx,blocky);
   //Besser und moduluarer fuer die Bloecke initialisierung
   std::vector<Block *> Bloecke(Blockcount);
 
@@ -102,6 +107,7 @@ int main(){
 
   //DeathScreen input
   bool retry = false;
+  int chose = 0;
 
   SetTargetFPS(60);
   while(!WindowShouldClose()){
@@ -180,60 +186,72 @@ int main(){
 
       }
 
-
+      // hoehen stopp
 
 
 
       //Alien bewegung
 
-      if (aliencd >= 140)
-      {
+      if (aliencd >= 5){
         aliencd = 0;
-        std::cout<< "moveswitch " << alienmoveswitch << std::endl;
-        if(alienmoveswitch  > 0 && alienmoveswitch < 5){
-        for (int i = 0; i != alienrows; i++)
-        {
+        std::cout<< "moveswitch "<< rowmove << " " << alienmoveswitch << std::endl;
+        if(alienmoveswitch  > 0 && alienmoveswitch <= 5){
           for (int x = 0; x < aliencount; x++)
           {
-            //testet dass wir nicht auf null alien zugreifen ,dies sind alien die getoetet wurden
-            //if(Alienblock[i][x] !=  NULL){
-            if(!Alienblock[i][x]->tot()){
-            Alienblock[i][x]->Movel();
+            if(!Alienblock[rowmove][x]->tot()){
+            Alienblock[rowmove][x]->Movel();
             }
           }
-          
-        }
+        rowmove = rowmove +1;
+        if(rowmove== alienrows ){
         alienmoveswitch = alienmoveswitch +1;
+        rowmove = 0;
+        }
+
         } else if(alienmoveswitch < 0 && alienmoveswitch >= -5){
-          for (int i = 0; i != alienrows; i++)
-          {
             for (int x = 0; x < aliencount; x++)
             {
 
-            if(!Alienblock[i][x]->tot()){
+            if(!Alienblock[rowmove][x]->tot()){
             //  if(Alienblock[i][x] != NULL){
-              Alienblock[i][x]->Mover();
+              Alienblock[rowmove][x]->Mover();
               }
             }
-            }
+            rowmove = rowmove +1;
+            if(rowmove == alienrows){
           alienmoveswitch = alienmoveswitch +1;
+          rowmove = 0;
+          }
         }
         else {
+          int nestedflag = 0;
           for (int i = 0; i != alienrows; i++)
           {
+            if(nestedflag == 0){
             for (int x = 0; x < aliencount; x++)
             {
 
             if(!Alienblock[i][x]->tot()){
-            //  if(Alienblock[i][x] != NULL){
-              std::cout<< i <<" und " << x<<std::endl; 
-              Alienblock[i][x]->Moved();
+              //std::cout<< Alienblock[i][x]->geth() <<" und " << uno.gety()<<std::endl; 
+              if(Alienblock[i][x]->geth()+20 > uno.gety() - uno.getheight()){
+                nestedflag = 1;
+                break;
+              }
+              Alienblock[i][x]->Moved(uno.gety());
               }
               
+            }
             }
           }
 
           alienmoveswitch =  (alienmovereset == 1)  ? -5 : 1;
+        /*  if(alienmovereset == 1){
+            alienmoveswitch = -5;
+            alienmovereset = -1;
+          }else {
+            alienmovereset = 1;
+            alienmoveswitch = 1;
+          } */ 
           alienmovereset = alienmovereset * -1;
         }
         mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
@@ -275,7 +293,7 @@ int main(){
 
       // Block hit check 
       if(uno.tot() && duo.tot() && trio.tot()){ 
-        Gamescreen = ENDING;
+        //Gamescreen = ENDING;
       }
       for(auto i : dschuesse){
         if( i->getx() >= einsblockx &&  i->getx()<= einsblockx+uno.getwidth()){
@@ -312,6 +330,7 @@ int main(){
           Spaceship->position.x = Spaceship->position.x +60;
           if(leben <= 0){
            Gamescreen = ENDING; 
+
           }
         }
         }else {
@@ -331,6 +350,21 @@ int main(){
       }else if(IsKeyPressed(KEY_S)){
         retry = false;
       }
+
+      if(IsKeyPressed(KEY_ENTER)){
+        if(retry){
+          chose = 1;
+        }else{
+          chose = 2;
+        }
+      }
+      if(chose == 2){
+        goto reset;
+      }else if(chose == 1) {
+        //free befehle ?
+        std::cout<<"aaaaaaaaaaaaa"<<std::endl;
+        CloseWindow();
+      } 
     }
     break;
     }
@@ -409,5 +443,6 @@ int main(){
     }
   EndDrawing();
 }
+CloseWindow();
 return 0;
 }
