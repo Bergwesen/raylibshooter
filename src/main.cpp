@@ -37,6 +37,24 @@ const int schusscoldown = 30;
 const int Blockcount = 3;
 
 
+void freeall(Raumschiff *a , Blockalien *b , std::vector<std::vector<Alien*>> *c,std::vector<Schuss*> *d, std::vector<Schuss*> *e){
+
+  delete a;
+  delete b->height;
+  delete b->l;
+  delete b->r;
+  for (auto i : *c){
+    for( auto x : i){
+      delete x;
+    }
+  }
+  for (auto i : *d){
+    delete i;
+  }
+  for (auto i : *e){
+    delete i;
+  }
+}
 
 
 
@@ -44,7 +62,8 @@ const int Blockcount = 3;
 int main(){
 
   InitWindow(Screenbreite,Screenhoehe,"Spaceshooter"); 
-
+restart:
+  Screens Gamescreen = LOGO;
   int score = 0;
   //schiffs leben
   //bloecke init
@@ -52,16 +71,15 @@ int main(){
   Block uno = Block(einsblockx,blocky);
   Block duo = Block(duoblockx,blocky);
   Block trio = Block(trioblockx,blocky);
-reset: 
+  // leben auf spaceship leben setzen
   int leben = 3;
-
+reset: 
   int rowmove = 0;
 
 
-  Screens Gamescreen = LOGO;
   int framecounter = 0;
   srand(time(NULL));
-  Raumschiff *Spaceship  = new Raumschiff(schiffx,schiffy,4);
+  Raumschiff *Spaceship  = new Raumschiff(schiffx,schiffy,4,leben);
   int schusscd = 0;
   Texture2D Schiff = LoadTexture("resources/schiff.png");
   Spaceship->tester();
@@ -138,7 +156,12 @@ reset:
 
 
 
-      mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
+      int reesetflag = mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
+      if(reesetflag){
+        std::cout<< "TOOT"<<std::endl;
+        WaitTime(1);
+        goto reset;
+      }
 
       //Schiff bewegung 
       if(IsKeyDown(KEY_A)) Spaceship->Movel();   
@@ -168,18 +191,18 @@ reset:
 
       for( auto& ib : schuesse)  {
         if(ib->schusskolision(mainblock) == 1){
-          std::cout<< " HIT asdfaf " << std::endl;
-          int asf = (ib->getx() - alienblockx) / allienimgwidth;
-          int asdf = (ib->gety() - alienblocky)/alienimgheight;
-          std::cout<< " real hit " << asf << " und " << asdf << std::endl;
+          std::cout<< " Im Main block  " << std::endl;
+      //    int asf = (ib->getx() - alienblockx) / allienimgwidth;
+       //   int asdf = (ib->gety() - alienblocky)/alienimgheight;
+          //std::cout<< " real hit " << asf << " und " << asdf << std::endl;
           Vector2 k = ib->schusslocater(Alienblock); 
-          std::cout<< Alienblock.size()<< " "<< Alienblock[0].size() <<" HIT "<< k.x <<" , " << k.y << std::endl;
+          //std::cout<< Alienblock.size()<< " "<< Alienblock[0].size() <<" HIT "<< k.x <<" , " << k.y << std::endl;
           if(k.x != -1 && k.y != -1){
             if(Alienblock[k.y][k.x]->tot()){
                 score = score +10;
             }
             }
-          std::cout<<" it " << std::endl;
+          //std::cout<<" it " << std::endl;
         } else{
           break;
         }
@@ -194,7 +217,7 @@ reset:
 
       if (aliencd >= 5){
         aliencd = 0;
-        std::cout<< "moveswitch "<< rowmove << " " << alienmoveswitch << std::endl;
+       // std::cout<< "moveswitch "<< rowmove << " " << alienmoveswitch << std::endl;
         if(alienmoveswitch  > 0 && alienmoveswitch <= 5){
           for (int x = 0; x < aliencount; x++)
           {
@@ -255,7 +278,7 @@ reset:
           alienmovereset = alienmovereset * -1;
         }
         mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
-        std::cout << *mainblock.l <<  " "<< *mainblock.r << " " << *mainblock.height << std::endl;
+        //std::cout << *mainblock.l <<  " "<< *mainblock.r << " " << *mainblock.height << std::endl;
       }
 
       //Alien schuss
@@ -272,12 +295,16 @@ reset:
         }
 
       }
-      std::cout<< lowalien.size() << " sollte 8 sein " << std::endl;
-      int randomzahl = rand() % lowalien.size();
+     // std::cout<< lowalien.size() << " sollte 8 sein " << std::endl;
+     int randomzahl;
+     if(lowalien.size() > 0){
+       randomzahl = rand() % lowalien.size();
+        
       //for( auto m : lowalien){
           dschuesse.push_back(lowalien[randomzahl]->shoot());
 
       alienschusscd = 0;
+      }
       }
      // }
    if(dschuesse.size() != 0){
@@ -293,11 +320,11 @@ reset:
 
       // Block hit check 
       if(uno.tot() && duo.tot() && trio.tot()){ 
-        //Gamescreen = ENDING;
+        Gamescreen = ENDING;
       }
       for(auto i : dschuesse){
         if( i->getx() >= einsblockx &&  i->getx()<= einsblockx+uno.getwidth()){
-          std::cout<< i->gety() << " von das test "<< blocky-uno.getheight() << std::endl;
+//          std::cout<< i->gety() << " von das test "<< blocky-uno.getheight() << std::endl;
           if((i->gety() +  i->groesse.y) >= (blocky) ){
           i->kill();   
           uno.hit();
@@ -359,10 +386,12 @@ reset:
         }
       }
       if(chose == 2){
-        goto reset;
+        goto restart;
+        freeall(Spaceship,&mainblock,&Alienblock,&schuesse,&dschuesse);
       }else if(chose == 1) {
         //free befehle ?
-        std::cout<<"aaaaaaaaaaaaa"<<std::endl;
+        freeall(Spaceship,&mainblock,&Alienblock,&schuesse,&dschuesse);
+//        std::cout<<"aaaaaaaaaaaaa"<<std::endl;
         CloseWindow();
       } 
     }
@@ -446,3 +475,5 @@ reset:
 CloseWindow();
 return 0;
 }
+
+

@@ -61,7 +61,7 @@ typedef struct Blockalien{
   int *l;
   int *r;
   int *height;
-  void update(int *k ,int *b,int *a,std::vector<std::vector<Alien*>> h);
+  int update(int *k ,int *b,int *a,std::vector<std::vector<Alien*>> h);
   };
 
 
@@ -95,7 +95,7 @@ class Schuss{
 
 class Raumschiff{
   public :
-  Raumschiff(int x , int y,int speed);
+  Raumschiff(int x , int y,int speed,int live);
   ~Raumschiff();
   Vector2 position;
   int Schiffspeed;
@@ -131,7 +131,7 @@ class Block{
   int getwidth();
 
   private :
-  int leben = 3;
+  int leben = 8;
   Vector2 position;
   Texture2D bild;
 

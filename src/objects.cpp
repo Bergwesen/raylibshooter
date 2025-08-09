@@ -15,11 +15,12 @@ const int schussbreite = 4;
 const int schusslaenge = 10;
 const int schussgeschwindigkeit = 3; 
 
-Raumschiff::Raumschiff(int x,int y,int speed){
+Raumschiff::Raumschiff(int x,int y,int speed,int live){
       position.x = x;
       position.y = y;
       bild = LoadTexture("resources/schiff.png");
       Schiffspeed =  speed;
+      leben = live;
 
 };
 Raumschiff::~Raumschiff(){
@@ -120,7 +121,7 @@ void Schuss::kill(){
 int Schuss::schusskolision(Blockalien b){
     //std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
     if(position.x >= *b.l && position.x <= *b.r && position.y <= *b.height){
-    std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
+//    std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
       return 1;
     }
       return 0;
@@ -137,49 +138,43 @@ float Schuss::gety(){
 
 Vector2 Schuss::schusslocater(std::vector<std::vector<Alien*>> &Alienblock){
   int zeile = -1;
-  
-  for(auto x : Alienblock[0] ){
-    zeile = zeile +1;
-
-    //std::cout <<  position.x << " ist in  " << x->getx() <<"-"<< x->getwidth()+x->getx()<< std::endl;
-    if( x != NULL){
-    std::cout <<  position.x << " ist in  " << x->getx() <<"-"<< x->getwidth()+x->getx()<< std::endl;
-    if( position.x >= x->getx() && (x->getx()+x->getwidth()) >= position.x){
-        std::cout << "     test " << position.x << " und kkkk " << x->getx() << std::endl;
-        
-        break;
-    }
-    }
-  }
   int spalte = -1;
-  for(auto x : Alienblock){
-        spalte = spalte +1;
-       // if(x[zeile] != NULL){
-        if(!x[zeile]->tot()){
-        std::cout << " test " << position.y << " und " << x[zeile]->geth()<<  " und " << x[zeile]->getheight()<< std::endl;
-        if( (position.y+groesse.y ) >= x[zeile]->geth() && (position.y+groesse.y) <= x[zeile]->geth() + x[zeile]->getheight()  ){
-         std::cout<< "HHHIT "<< zeile << ","<<  spalte ;
-         dead = 1;
-          int restleben = x[zeile]->hit();
-          std::cout<<" leben " << restleben <<std::endl;
-         if(restleben== 0){
-            //x[zeile] = NULL;
-            std::cout<<"drinnnnnnnen"<<std::endl;
-         }
-         break;
+  int flag = false;
+  for(auto y : Alienblock ){
+    spalte = spalte +1;
+    for (auto x : y)
+    {
+      zeile = zeile+ 1;
+      if(!x->tot()){
+      if (position.x >= x->getx() && (x->getx() + x->getwidth()) >= position.x)
+      {
+
+        if ((position.y + groesse.y) >= x->geth() && (position.y + groesse.y) <= (x->geth() + x->getheight()))
+        {
+          flag = true;
+          x->hit();
+          break;
         }
-        }
+      }
+      }
+    }
+    if(flag){
+      break;
+    }
+    zeile = -1;
   }
 
+//  std::cout<< zeile << " und " << spalte << std::endl;
   Vector2 a;
   if( spalte == -1 || zeile == -1){
     a.x = -1;
     a.y = -1;
-    dead = 1;
+    //dead = 1;
   }
   else{
   a.x = zeile;
   a.y = spalte;
+  dead = 1;
   }
   return a;
 }
@@ -351,22 +346,34 @@ int Alien::hit(){
       }
 } */
 
-void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
+int Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
   l = k;
   r = b;
   height = a;
   *l =  6000;
   *r = -1;
   *height = -1;
+  int dead = true;
+  int aliencount = 0;
   for(int y = 0; y < h.size(); y++){
 
     for(int z = 0 ; z< h[y].size() ; z++){
-      if(h[y][z] != NULL){
+      if(!h[y][z]->tot()){
       *l = std::min(*l,h[y][z]->getx());
       *r = std::max(*r,h[y][z]->getx()+h[y][z]->getwidth());
       *height = std::max(*height,h[y][z]->geth());
+      dead = false;
+      aliencount = aliencount +1 ;
       }
     }
+  }
+ // std::cout<<"von " <<*l  << " bis " << *r << " mit hoehe von "<< *height << std::endl;
+  //std::cout << "Aliens " << aliencount << std::endl;
+  if(dead){
+    return 1;
+  }
+  else{
+    return 0;
   }
 }
 
