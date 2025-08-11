@@ -30,9 +30,6 @@ void Raumschiff::Draw(){
     DrawTextureV(bild,position,WHITE);
 };
 
-void Raumschiff::tester(){
-  printf(" jo \n");
-};
 
 void Raumschiff::hit(){
   if(leben >= 1){
@@ -50,7 +47,6 @@ int Raumschiff::getheight(){
 
 
 Schuss* Raumschiff::shoot(){
-    // es hier so enden,dass die position die mitte des schiffs ist somit kommt der strahl uach von der mitte des schiffs
     Vector2 temp = position;
     temp.x = position.x + bild.width/2;
     Schuss *bang= new Schuss(temp);
@@ -59,7 +55,6 @@ Schuss* Raumschiff::shoot(){
 };
 
 void Raumschiff::Movel(){
-
       position.x = position.x -  Schiffspeed ;   
       if(  position.x < 0 ){
         position.x = 0;
@@ -107,21 +102,18 @@ void Schuss::dMove(){
 
 int Schuss::isdead(){
   if(dead == 1){
-  printf("is   b tot\n");
     return 1;
   }
   return 0;
 }
-
+//Markiert einen Schuss damit er spaeter geloescht wird
 void Schuss::kill(){
   dead = 1;
 }
 
-//Anpassen sodass man nur checkt ob es groesser ist als die y hohe es muss nicht zwischen sein siehe block auch fuer schusslcaoter
+//Es sollen nur Schuesse weiter ueberpruft werden, die sich in der Breite   und Groesse befinden
 int Schuss::schusskolision(Blockalien b){
-    //std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
     if(position.x >= *b.l && position.x <= *b.r && position.y <= *b.height){
-//    std::cout<< position.x<< " und " <<*b.l <<" und " <<*b.r <<" und "<< *b.height <<" und " << position.y<< std::endl;
       return 1;
     }
       return 0;
@@ -136,6 +128,8 @@ float Schuss::gety(){
   return position.y;
 }
 
+//Sucht den Alien , der getroffen wird 
+//Leider noch in n^2 noch nicht geaendert
 Vector2 Schuss::schusslocater(std::vector<std::vector<Alien*>> &Alienblock){
   int zeile = -1;
   int spalte = -1;
@@ -164,12 +158,10 @@ Vector2 Schuss::schusslocater(std::vector<std::vector<Alien*>> &Alienblock){
     zeile = -1;
   }
 
-//  std::cout<< zeile << " und " << spalte << std::endl;
   Vector2 a;
   if( spalte == -1 || zeile == -1){
     a.x = -1;
     a.y = -1;
-    //dead = 1;
   }
   else{
   a.x = zeile;
@@ -244,7 +236,6 @@ void Alien::Draw(){
 };
 
 Schuss* Alien::shoot(){
-    // es hier so enden,dass die position die mitte des schiffs ist somit kommt der strahl uach von der mitte des schiffs
     Vector2 temp = position;
     temp.x = position.x + bild.width/2;
     Schuss *bang= new Schuss(temp);
@@ -302,7 +293,7 @@ int Alien::tot(){
 int Alien::getx(){
   return position.x;
 }
-// soll angeben ob ein alien tot ist und seine position in der list auf null gesetzt werden muss
+
 int Alien::hit(){
   leben = leben -1;
   if(leben == 0){
@@ -314,38 +305,7 @@ int Alien::hit(){
     return leben;
   }
 }
-  //das hier ist nicht dumme schreibweise der methode die aufgrund einer falschen debugguginng session enstant
-/*void Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
-    l = k;
-    r = b;
-    height = a;
-    *l = -1;
-    *r = -1;
-    *height = -1;
-      for(auto i = h.begin() ; i!= h.end() ; i++){
-        std::vector<Alien*>& ref = *i;
-         for(int x = 0; x < ref.size(); x++){
-          // geplant ist es tote alien zu null zu setzen
-          if( ref[x] != NULL){
- //             std::cout<< "jo " << std::endl;
-              Alien &g = *ref[x];
-              if(*l == -1){
-                // iterieren von links nach rechts deshalb ist der erste alien die linke grenze
-                *l = g.getx();
-              }
-              *r = std::max(*r,g.getx());
-              // irgendwas ist falsch
-              *height = g.geth();
-//              std::cout << g.geth() << " hoehe " << std::endl;
-          }
-         }
-          if( *r != -1 && *l != -1 && *height != -1){
-            return;
-          }
-
-      }
-} */
-
+//Der Block muss regelmaessig geupdatet werden,damit er nach jedem Schuss und jeder Bewegung die neuen Werte hat
 int Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
   l = k;
   r = b;
@@ -367,8 +327,6 @@ int Blockalien::update(int *k,int *b,int *a,std::vector<std::vector<Alien*>> h){
       }
     }
   }
- // std::cout<<"von " <<*l  << " bis " << *r << " mit hoehe von "<< *height << std::endl;
-  //std::cout << "Aliens " << aliencount << std::endl;
   if(dead){
     return 1;
   }
@@ -385,6 +343,10 @@ Block::Block(int x , int y){
 
 int Block::getx(){
   return position.x; 
+}
+
+int Block::getleben(){
+  return leben; 
 }
 
 int Block::gety(){

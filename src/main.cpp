@@ -13,6 +13,8 @@
 #include <algorithm>
 #define _USE_MATH_DEFINES
 #include "objects.hpp"
+
+
 typedef enum Screens {LOGO,TITLE,GAME,ENDING} Screens;
 
 //globale konstante Variable 
@@ -56,7 +58,20 @@ void freeall(Raumschiff *a , Blockalien *b , std::vector<std::vector<Alien*>> *c
   }
 }
 
+int deadrow(std::vector<Alien*> row){
+  int count = 0;
+  for( auto x : row){
+    if(x->tot() == 1) count = count +1;
+  }
+  if(count == 0){
+    return 1;
+  }else if(count ==1 ){
+    return 2;
+  }else {
+    return 3;
+  }
 
+}
 
 
 int main(){
@@ -65,15 +80,15 @@ int main(){
 restart:
   Screens Gamescreen = LOGO;
   int score = 0;
-  //schiffs leben
-  //bloecke init
 
   Block uno = Block(einsblockx,blocky);
   Block duo = Block(duoblockx,blocky);
   Block trio = Block(trioblockx,blocky);
-  // leben auf spaceship leben setzen
   int leben = 3;
 reset: 
+
+
+  int startzeit = 100;
   int rowmove = 0;
 
 
@@ -83,7 +98,6 @@ reset:
   int schusscd = 0;
   Texture2D Schiff = LoadTexture("resources/schiff.png");
   Spaceship->tester();
-  //kann eigentlich eine queue sein
   std::vector<Schuss*> schuesse{};
   std::vector<Schuss*> dschuesse{};
 
@@ -118,11 +132,6 @@ reset:
   int allienimgwidth = Alienblock[0][0]->getwidth();
 
 
-  //Besser und moduluarer fuer die Bloecke initialisierung
-  std::vector<Block *> Bloecke(Blockcount);
-
-
-
   //DeathScreen input
   bool retry = false;
   int chose = 0;
@@ -152,10 +161,9 @@ reset:
         aliencd = aliencd + 1;
         alienschusscd = alienschusscd +1;
         schusscd = schusscd +1;
-        //std::cout<< aliencd << std::endl;
 
 
-
+      //Gibt an ob alle aliens tot sind
       int reesetflag = mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
       if(reesetflag){
         std::cout<< "TOOT"<<std::endl;
@@ -189,36 +197,30 @@ reset:
         ib->Move();
       }
 
+      //Schuss Kolisioncheck
       for( auto& ib : schuesse)  {
         if(ib->schusskolision(mainblock) == 1){
-          std::cout<< " Im Main block  " << std::endl;
-      //    int asf = (ib->getx() - alienblockx) / allienimgwidth;
-       //   int asdf = (ib->gety() - alienblocky)/alienimgheight;
-          //std::cout<< " real hit " << asf << " und " << asdf << std::endl;
           Vector2 k = ib->schusslocater(Alienblock); 
-          //std::cout<< Alienblock.size()<< " "<< Alienblock[0].size() <<" HIT "<< k.x <<" , " << k.y << std::endl;
           if(k.x != -1 && k.y != -1){
             if(Alienblock[k.y][k.x]->tot()){
                 score = score +10;
+                startzeit = startzeit -5;
+                if(startzeit< 10) startzeit = 10;
             }
             }
-          //std::cout<<" it " << std::endl;
         } else{
           break;
         }
 
       }
 
-      // hoehen stopp
-
 
 
       //Alien bewegung
-
-      if (aliencd >= 5){
+      if (aliencd >= startzeit){
         aliencd = 0;
-       // std::cout<< "moveswitch "<< rowmove << " " << alienmoveswitch << std::endl;
         if(alienmoveswitch  > 0 && alienmoveswitch <= 5){
+
           for (int x = 0; x < aliencount; x++)
           {
             if(!Alienblock[rowmove][x]->tot()){
@@ -236,7 +238,6 @@ reset:
             {
 
             if(!Alienblock[rowmove][x]->tot()){
-            //  if(Alienblock[i][x] != NULL){
               Alienblock[rowmove][x]->Mover();
               }
             }
@@ -255,7 +256,6 @@ reset:
             {
 
             if(!Alienblock[i][x]->tot()){
-              //std::cout<< Alienblock[i][x]->geth() <<" und " << uno.gety()<<std::endl; 
               if(Alienblock[i][x]->geth()+20 > uno.gety() - uno.getheight()){
                 nestedflag = 1;
                 break;
@@ -268,17 +268,9 @@ reset:
           }
 
           alienmoveswitch =  (alienmovereset == 1)  ? -5 : 1;
-        /*  if(alienmovereset == 1){
-            alienmoveswitch = -5;
-            alienmovereset = -1;
-          }else {
-            alienmovereset = 1;
-            alienmoveswitch = 1;
-          } */ 
           alienmovereset = alienmovereset * -1;
         }
         mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
-        //std::cout << *mainblock.l <<  " "<< *mainblock.r << " " << *mainblock.height << std::endl;
       }
 
       //Alien schuss
@@ -293,20 +285,18 @@ reset:
           }
 
         }
-
       }
-     // std::cout<< lowalien.size() << " sollte 8 sein " << std::endl;
+
+      //Auswahl des Aliens das schiessen soll
      int randomzahl;
      if(lowalien.size() > 0){
        randomzahl = rand() % lowalien.size();
-        
-      //for( auto m : lowalien){
-          dschuesse.push_back(lowalien[randomzahl]->shoot());
+       dschuesse.push_back(lowalien[randomzahl]->shoot());
+       alienschusscd = 0;
+      }
+      }
 
-      alienschusscd = 0;
-      }
-      }
-     // }
+   //Schussaktion + Loeschen
    if(dschuesse.size() != 0){
       auto it = remove_if(dschuesse.begin(),dschuesse.end(), [](Schuss *x){
         return x->isdead();
@@ -318,13 +308,13 @@ reset:
       }
 
 
-      // Block hit check 
+      //  Blockleben check
       if(uno.tot() && duo.tot() && trio.tot()){ 
         Gamescreen = ENDING;
       }
+      //Alien zu Block
       for(auto i : dschuesse){
         if( i->getx() >= einsblockx &&  i->getx()<= einsblockx+uno.getwidth()){
-//          std::cout<< i->gety() << " von das test "<< blocky-uno.getheight() << std::endl;
           if((i->gety() +  i->groesse.y) >= (blocky) ){
           i->kill();   
           uno.hit();
@@ -341,12 +331,40 @@ reset:
          }
         }else{
           if((i->gety() - i->groesse.y)  <  blocky - uno.getheight() ){
-            //da es ein geordneter vektor ist sollte der vordere vekor am laengste laufen und somit weiter unten sein
+            break;
+          }
+        }
+      }
+        //Raumschiff  zu Block
+       for(auto i : schuesse){
+        if( i->getx() >= einsblockx &&  i->getx()<= einsblockx+uno.getwidth()){
+          if((i->gety() +  i->groesse.y) <= (blocky+uno.getheight())  ){
+          i->kill();   
+          uno.hit();
+         }
+        }else if(i->getx() >= duoblockx && i->getx() <= duoblockx+duo.getwidth()){
+          if((i->gety() +i->groesse.y ) <=  (blocky+uno.getheight() )  ){
+          i->kill();   
+          duo.hit();
+         }
+        } else if(i->getx() >= trioblockx && i->getx() <= trioblockx+trio.getwidth()){
+          if((i->gety() + i->groesse.y) <= (blocky + uno.getheight() ) ){
+          i->kill();   
+          trio.hit();
+         }
+        }else{
+          if((i->gety() - i->groesse.y)  <  blocky - uno.getheight() ){
             break;
           }
         }
       }
 
+
+
+
+
+
+   //Entfernen von schuessen die Tot sind
       for(auto i : dschuesse){
         if(i->gety() >= Spaceship->position.y){
         if(i->getx() >= Spaceship->position.x && i->getx() <= (Spaceship->position.x + Spaceship->getwidth())){
@@ -389,9 +407,7 @@ reset:
         goto restart;
         freeall(Spaceship,&mainblock,&Alienblock,&schuesse,&dschuesse);
       }else if(chose == 1) {
-        //free befehle ?
         freeall(Spaceship,&mainblock,&Alienblock,&schuesse,&dschuesse);
-//        std::cout<<"aaaaaaaaaaaaa"<<std::endl;
         CloseWindow();
       } 
     }
@@ -428,22 +444,19 @@ reset:
       DrawRectangle(0,0,Screenbreite,Screenhoehe,BLACK);
       DrawText("Space Shooters",40,Screenhoehe*0.5,50,WHITE);
       DrawText(TextFormat("Score : %d ",score),50, 10,20,WHITE);
-      DrawText(TextFormat("Leben : %d ",leben),50, 750,20,WHITE);
+      DrawText(TextFormat("Leben : %d,  Block 1 : %d , Block 2 : %d , Block 3 :%d ",leben,uno.getleben(),duo.getleben(),trio.getleben()),40, 750,20,WHITE);
       Spaceship->Draw();
-      //Schuss
       for(auto i : schuesse){
         i->Draw();
       }
       for(auto i : dschuesse){
         i->Draw();
       }
-
-      //Alienblock
+      //AlienBlock malen
       for (int i = 0; i != alienrows; i++)
       {
         for (int x = 0; x < aliencount; x++)
         {
-//          if(Alienblock[i][x] != NULL){
           if(!Alienblock[i][x]->tot()){
           std::vector<Alien*> b = Alienblock[i];
           b[x]->Draw();
@@ -475,5 +488,3 @@ reset:
 CloseWindow();
 return 0;
 }
-
-

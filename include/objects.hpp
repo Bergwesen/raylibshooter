@@ -12,7 +12,7 @@
 #include <vector>
 #pragma once 
 
-
+//Um die Auswahl der Bilder fuer die jeweiligen Aliens zu vereinfachen
 typedef enum Alientyp{ Row1,Row2,Row3,Row4,Row5,Row6,Ende};
 
 
@@ -29,12 +29,12 @@ class Alien{
   Alien(int,Vector2);
   ~Alien();
   void Draw();
-  void Movel();
-  void Mover();
-  void Moved(int border);
+  void Movel(); //links
+  void Mover(); //rechts
+  void Moved(int border); //runter
   int hit();
-  int getwidth();
-  int getheight();
+  int getwidth(); //bilderbreite
+  int getheight(); //bildhoehe
   int getx();
   int geth();
   int tot();
@@ -56,7 +56,7 @@ class Alien{
 };
 
 
-
+//Struct um Informationen ueber den Alienblock zusammeln : Hoehe und Breite somit muss nicht immer eine Schusskolision berechnet werden
 typedef struct Blockalien{
   int *l;
   int *r;
@@ -100,7 +100,6 @@ class Raumschiff{
   Vector2 position;
   int Schiffspeed;
   void Draw();
-  void tester();
   void Movel();
   void Mover(int border);
   Schuss* shoot();
@@ -129,6 +128,7 @@ class Block{
   int getx();
   int getheight();
   int getwidth();
+  int getleben();
 
   private :
   int leben = 8;
@@ -137,16 +137,3 @@ class Block{
 
 
 };
-
-//das hier ist nicht dumme schreibweise der methode die aufgrund einer falschen debugguginng session enstant
-/*typedef struct Blockalien{
-  int *l;
-  int *r;
-  int *height;
-  void update(int *k ,int *b,int *a,std::vector<std::vector<Alien*>> h);
-  }; */
-
-
-
-                    
-//FUNKTIONEN
