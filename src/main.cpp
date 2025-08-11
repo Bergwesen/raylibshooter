@@ -97,7 +97,6 @@ reset:
   Raumschiff *Spaceship  = new Raumschiff(schiffx,schiffy,4,leben);
   int schusscd = 0;
   Texture2D Schiff = LoadTexture("resources/schiff.png");
-  Spaceship->tester();
   std::vector<Schuss*> schuesse{};
   std::vector<Schuss*> dschuesse{};
 
