@@ -88,7 +88,7 @@ restart:
 reset: 
 
 
-  int startzeit = 100;
+  int startzeit = 70;
   int rowmove = 0;
 
 
@@ -165,7 +165,7 @@ reset:
       //Gibt an ob alle aliens tot sind
       int reesetflag = mainblock.update(mainblock.l,mainblock.r,mainblock.height,Alienblock);
       if(reesetflag){
-        std::cout<< "TOOT"<<std::endl;
+        //std::cout<< "TOOT"<<std::endl;
         WaitTime(1);
         goto reset;
       }
@@ -443,7 +443,7 @@ reset:
       DrawRectangle(0,0,Screenbreite,Screenhoehe,BLACK);
       DrawText("Space Shooters",40,Screenhoehe*0.5,50,WHITE);
       DrawText(TextFormat("Score : %d ",score),50, 10,20,WHITE);
-      DrawText(TextFormat("Leben : %d,  Block 1 : %d , Block 2 : %d , Block 3 :%d ",leben,uno.getleben(),duo.getleben(),trio.getleben()),40, 750,20,WHITE);
+      DrawText(TextFormat("Leben : %d,  Block 1 : %d , Block 2 : %d , Block 3 :%d ",leben,uno.getleben(),duo.getleben(),trio.getleben()),20, 750,20,WHITE);
       Spaceship->Draw();
       for(auto i : schuesse){
         i->Draw();

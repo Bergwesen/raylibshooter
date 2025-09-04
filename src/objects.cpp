@@ -82,7 +82,7 @@ Schuss::Schuss(Vector2 ort){
 }
 
  Schuss::~Schuss(){
-  printf("ist tot\n");
+  //printf("ist tot\n");
 }
 void Schuss::Move(){
   position.y = position.y -schussgeschwindigkeit;
